@@ -60,7 +60,8 @@ configure_listeners() {
     local account
     account=$(printf '%s' "$session" | jq -r '(.primaryAccounts["urn:stalwart:jmap"] // (.accounts | keys[0])) // empty')
     if [ -z "$account" ]; then
-        echo "Renode: could not open a JMAP session for setup."
+        echo "Renode: could not open a JMAP session for setup:"
+        printf '%s\n' "$session" | head -c 2000; echo
         kill -TERM "$rpid" 2>/dev/null; wait "$rpid"
         return 1
     fi

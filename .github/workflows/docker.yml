@@ -85,9 +85,9 @@ jobs:
           echo | timeout 15 openssl s_client -connect 127.0.0.1:25727 -quiet 2>/dev/null | head -1 | tee /tmp/imaps.txt
           grep -q '^\* OK' /tmp/imaps.txt
           # Web: the administrator login works, a wrong password does not
-          code=$(curl -s -o /dev/null -w '%{http_code}' -u "admin:$PW" http://127.0.0.1:25728/.well-known/jmap)
+          code=$(curl -s -o /dev/null -w '%{http_code}' -L -u "admin:$PW" http://127.0.0.1:25728/.well-known/jmap)
           echo "jmap with password: $code"; [ "$code" = 200 ]
-          code=$(curl -s -o /dev/null -w '%{http_code}' -u "admin:wrong-password" http://127.0.0.1:25728/.well-known/jmap)
+          code=$(curl -s -o /dev/null -w '%{http_code}' -L -u "admin:wrong-password" http://127.0.0.1:25728/.well-known/jmap)
           echo "jmap with wrong password: $code"; [ "$code" = 401 ]
           code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:25728/healthz/live)
           echo "healthz: $code"; [ "$code" = 200 ]
@@ -103,7 +103,7 @@ jobs:
           docker start ci
           ready 2 || { docker logs ci 2>&1 | tail -60; exit 1; }
           [ "$(docker logs ci 2>&1 | grep -c 'Renode: setting up listeners')" = 1 ]
-          code=$(curl -s -o /dev/null -w '%{http_code}' -u "admin:$PW" http://127.0.0.1:25728/.well-known/jmap)
+          code=$(curl -s -o /dev/null -w '%{http_code}' -L -u "admin:$PW" http://127.0.0.1:25728/.well-known/jmap)
           echo "jmap after restart: $code"; [ "$code" = 200 ]
           timeout 10 bash -c 'exec 3<>/dev/tcp/127.0.0.1/25724; head -c 3 <&3' | grep -q '^220'
           docker kill --signal INT ci

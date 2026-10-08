@@ -53,7 +53,7 @@ configure_listeners() {
 
     local session=""
     for _ in $(seq 1 60); do
-        session=$(curl -fsS -u "admin:${MAIL_ADMIN_PASSWORD}" "http://127.0.0.1:${WEB_PORT}/.well-known/jmap" 2>/dev/null) && break
+        session=$(curl -fsSL -u "admin:${MAIL_ADMIN_PASSWORD}" "http://127.0.0.1:${WEB_PORT}/.well-known/jmap" 2>/dev/null) && break
         kill -0 "$rpid" 2>/dev/null || { echo "Renode: Stalwart exited during setup."; return 1; }
         sleep 1
     done

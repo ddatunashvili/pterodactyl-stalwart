@@ -1,0 +1,92 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2026-10-08T00:00:00+00:00",
+    "name": "Stalwart Mail Server",
+    "author": "404frieds@gmail.com",
+    "description": "Stalwart: an all-in-one mail server (SMTP, submission, IMAP, JMAP) with a web admin, in one binary. The primary allocation is SMTP; four more allocations carry submission, submission over TLS, IMAPS and the web admin. Sign in to the web admin as admin with the generated password. Receiving mail from the internet needs port 25 forwarded to the SMTP allocation and MX/SPF/DKIM/DMARC records.",
+    "features": null,
+    "docker_images": {
+        "Stalwart 0.16": "ghcr.io/ddatunashvili/pterodactyl-stalwart:latest"
+    },
+    "file_denylist": [],
+    "startup": "/usr/local/bin/stalwart --config /home/container/etc/config.json",
+    "config": {
+        "files": "{}",
+        "startup": "{\"done\": \"Renode: Stalwart is ready\"}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\nmkdir -p /mnt/server/etc /mnt/server/data /mnt/server/logs /mnt/server/tmp\necho \"Install complete. Stalwart sets up its store and listeners on first start.\"\n",
+            "container": "ghcr.io/pterodactyl/installers:debian",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Administrator Password",
+            "description": "Password for the web admin user \"admin\", generated per server. Read from the environment on every start, so an administrator changing it and restarting changes the login.",
+            "env_variable": "MAIL_ADMIN_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|string|min:12|max:128",
+            "field_type": "text"
+        },
+        {
+            "name": "Mail Hostname",
+            "description": "The server's own name, e.g. mail.example.com: what it says in the SMTP greeting and must match the PTR record. Empty uses the container hostname. Change it later in the web admin under the system settings.",
+            "env_variable": "MAIL_HOSTNAME",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "nullable|string|max:253|regex:/^[A-Za-z0-9.-]*$/",
+            "field_type": "text"
+        },
+        {
+            "name": "Submission Port",
+            "description": "Mail submission with STARTTLS (standard 587), for mail clients sending. Allocated by the panel; listening below 1024 is impossible in a container, so the standard port is forwarded to this one on the node if needed.",
+            "env_variable": "SUBMISSION_PORT",
+            "default_value": "2587",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "Submissions Port",
+            "description": "Mail submission over implicit TLS (standard 465). Allocated by the panel; listening below 1024 is impossible in a container, so the standard port is forwarded to this one on the node if needed.",
+            "env_variable": "SUBMISSIONS_PORT",
+            "default_value": "2465",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "IMAPS Port",
+            "description": "IMAP over implicit TLS (standard 993), for mail clients reading. Allocated by the panel; listening below 1024 is impossible in a container, so the standard port is forwarded to this one on the node if needed.",
+            "env_variable": "IMAPS_PORT",
+            "default_value": "2993",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "Web Port",
+            "description": "Web admin, JMAP and webmail over plain HTTP. Put the panel's proxy in front of it for HTTPS. Allocated by the panel; listening below 1024 is impossible in a container, so the standard port is forwarded to this one on the node if needed.",
+            "env_variable": "WEB_PORT",
+            "default_value": "2080",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        }
+    ]
+}
